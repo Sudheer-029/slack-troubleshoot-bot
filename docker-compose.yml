@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  slack-bot:
+    build: .
+    container_name: troubleshoot-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION:-us-east-1}
+    # Uncomment if you need to mount AWS credentials from host
+    # volumes:
+    #   - ~/.aws:/home/botuser/.aws:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
