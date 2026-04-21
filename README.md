@@ -1,341 +1,89 @@
-# 🤖 AI-Powered Slack Troubleshooting Bot
+# AI Troubleshoot Bot — Human-in-the-Loop Incident Response
 
-An intelligent Slack bot that uses AWS Bedrock's Claude AI to provide automated troubleshooting assistance. Get instant, expert-level solutions to technical problems directly in Slack with interactive buttons for action.
+> Built in **24 hours**. Production-style AI incident response system that brings human oversight to autonomous troubleshooting.
 
-# 🤖 AI-Powered Slack Troubleshooting Bot
-
-**Problem:** Engineers waste hours debugging the same issues repeatedly. Context switching kills productivity.
-
-**Solution:** Type `/troubleshoot [your issue]` in Slack → AI analyzes → Suggests fixes → You approve → Bot executes.
-
-**Built with:** Amazon Bedrock (Claude), Slack Bolt, Python
+An AI-powered Slack bot that helps engineering teams resolve incidents faster — with Claude AI suggesting fixes and humans staying in control of execution.
 
 ---
 
-## Demo
+## The Flow
 
-<img width="923" height="476" alt="image" src="https://github.com/user-attachments/assets/b6645361-d7f0-4716-90b0-c62b512f472a" />
-
-
-Example:
 ```
-User: /troubleshoot Database connection timeouts
-Bot: 🔍 Analyzing...
-Suggested solutions:
-1. Increase the connection pool size: Ensure that the database connection pool is configured with a sufficient number of connections to handle the expected load. This will prevent connection timeouts by allowing the application to reuse existing connections instead of creating new ones for each request.
-2. Review database server configurations: Examine the database server configurations, such as the maximum number of connections, connection timeouts, and resource utilization. Adjust these settings as needed to accommodate the application's requirements and prevent connection timeouts.
-3. Optimize database queries: Analyze the application's database queries and identify any slow or inefficient queries that may be causing the connection timeouts. Optimize these queries by adding appropriate indexes, reducing data retrieval, or breaking down complex queries into smaller, more manageable ones.
-     
-     [Try Solution #1] [Escalate]
+Engineer types: /troubleshoot [describe the issue]
+                        ?
+         Claude AI (via Amazon Bedrock) analyzes the issue
+                        ?
+         AI returns 3 ranked fix suggestions with reasoning
+                        ?
+              Human reviews and chooses:
+         +--------------------------------+
+       Approve    Reject    Escalate
+         ?                      ?
+    Bot executes         On-call engineer
+      the fix             gets notified
+```
 
-:robot_face: Executing fix... (In production, this would run the actual fix)
-:white_tick: Fix applied successfully! Monitoring for 5 minutes...
 ---
 
-## ✨ Features
+## Why Human-in-the-Loop?
 
-- **AI-Powered Analysis**: Uses Claude 3 Haiku to analyze problems and generate solutions
-- **Instant Responses**: Get 3 specific, actionable solutions in seconds
-- **Interactive UI**: Slack buttons to execute fixes or escalate to humans
-- **Socket Mode**: No public webhooks needed - runs behind your firewall
-- **AWS Bedrock Integration**: Enterprise-grade AI with built-in security
+Fully autonomous incident response is risky in production. This architecture gives you the speed of AI analysis with the safety of human judgment before any action is taken.
 
-## 🎯 Use Cases
+- AI handles the cognitive load of diagnosis and option generation
+- Human retains decision authority on execution
+- Every incident and resolution is logged — builds institutional knowledge over time
+- Scales senior engineering judgment across the entire team
 
-- Database connection issues
-- Server performance problems
-- Application errors and bugs
-- Infrastructure troubleshooting
-- Configuration issues
-- Deployment problems
+---
 
-## 📋 Prerequisites
+## Tech Stack
 
-- Python 3.8 or higher
-- AWS account with Bedrock access
-- Slack workspace (admin access to create apps)
-- AWS credentials configured
+| Component | Technology |
+|---|---|
+| AI Model | Claude Sonnet via Amazon Bedrock |
+| Bot Framework | Slack Bolt API (Python) |
+| Language | Python |
+| Architecture | Human-in-the-loop (HITL) |
 
-## 🚀 Installation
+---
 
-### 1. Clone the Repository
+## Setup
 
 ```bash
-git clone <your-repo-url>
-cd <repo-directory>
-```
-
-### 2. Install Dependencies
-
-```bash
+git clone https://github.com/Sudheer-029/slack-troubleshoot-bot.git
+cd slack-troubleshoot-bot
 pip install -r requirements.txt
 ```
 
-### 3. Set Up Slack App
+Create a `.env` file:
+```
+SLACK_BOT_TOKEN=your_slack_bot_token
+SLACK_SIGNING_SECRET=your_signing_secret
+AWS_ACCESS_KEY_ID=your_aws_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret
+AWS_REGION=us-east-1
+```
 
-#### Create Slack App
-1. Go to https://api.slack.com/apps
-2. Click **"Create New App"** → **"From scratch"**
-3. Name your app (e.g., "TroubleshootBot")
-4. Select your workspace
-
-#### Configure Slash Command
-1. Go to **"Slash Commands"** in sidebar
-2. Click **"Create New Command"**
-   - Command: `/troubleshoot`
-   - Request URL: (not needed for Socket Mode)
-   - Short Description: "Get AI-powered troubleshooting help"
-   - Usage Hint: `[describe your problem]`
-3. Save
-
-#### Add OAuth Scopes
-1. Go to **"OAuth & Permissions"**
-2. Under **"Bot Token Scopes"**, add:
-   - `chat:write` - Send messages
-   - `commands` - Use slash commands
-3. Click **"Install to Workspace"**
-4. Copy the **Bot User OAuth Token** (starts with `xoxb-`)
-
-#### Enable Socket Mode
-1. Go to **"Socket Mode"** in sidebar
-2. Enable Socket Mode
-3. Under **"App-Level Tokens"**, click **"Generate Token and Scopes"**
-   - Name: `socket-token`
-   - Scope: `connections:write`
-4. Copy the **App-Level Token** (starts with `xapp-`)
-
-### 4. Configure AWS Bedrock
-
-#### Enable Claude Access
-1. Go to AWS Bedrock Console: https://console.aws.amazon.com/bedrock
-2. Select **us-east-1** region
-3. Navigate to **Playgrounds** → **Chat**
-4. Select **Claude 3 Haiku** model
-5. Send a test message to activate the model
-
-#### Configure AWS Credentials
-Ensure AWS credentials are configured via:
-- AWS CLI: `aws configure`
-- Environment variables: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
-- IAM role (if running on EC2/ECS)
-
-### 5. Configure Environment Variables
-
-Create a `.env` file in the project root:
-
+Run the bot:
 ```bash
-cp .env.example .env
+python app.py
 ```
-
-Edit `.env` and add your tokens:
-
-```env
-SLACK_BOT_TOKEN=xoxb-your-bot-token-here
-SLACK_APP_TOKEN=xapp-your-app-token-here
-```
-
-## 🎮 Usage
-
-### Start the Bot
-
-```bash
-python bot.py
-```
-
-You should see: `Bolt app is running!`
-
-### Use in Slack
-
-In any Slack channel where the bot is added:
-
-```
-/troubleshoot Database connection timeouts in production
-```
-
-The bot will:
-1. Analyze the problem using Claude AI
-2. Return 3 specific, actionable solutions
-3. Display interactive buttons:
-   - ✅ **Try Solution #1** - Execute the suggested fix
-   - ❌ **Escalate to Human** - Create a ticket for manual intervention
-
-### Example Interaction
-
-**User Input:**
-```
-/troubleshoot API returning 500 errors intermittently
-```
-
-**Bot Response:**
-```
-🔍 Analyzing: API returning 500 errors intermittently
-
-Suggested solutions:
-1. Check server logs for stack traces to identify the failing endpoint and error type
-2. Verify database connection pool settings aren't exhausted (increase max connections)
-3. Add request timeout monitoring and implement circuit breaker pattern
-
-[✅ Try Solution #1] [❌ Escalate to Human]
-```
-
-## 📁 Project Structure
-
-```
-.
-├── bot.py              # Main bot application
-├── requirements.txt    # Python dependencies
-├── .env               # Environment variables (not in git)
-├── .env.example       # Environment variables template
-├── .gitignore         # Git ignore rules
-└── README.md          # This file
-```
-
-## 🔧 Configuration
-
-### Change AI Model
-
-To use a different Claude model, edit `bot.py`:
-
-```python
-# Claude 3 Haiku (fastest, cheapest)
-modelId='anthropic.claude-3-haiku-20240307-v1:0'
-
-# Claude 3 Sonnet (balanced)
-modelId='anthropic.claude-3-sonnet-20240229-v1:0'
-
-# Claude 3.5 Sonnet (most capable)
-modelId='anthropic.claude-3-5-sonnet-20241022-v2:0'
-```
-
-### Adjust Response Length
-
-Modify max_tokens in `bot.py`:
-
-```python
-"max_tokens": 500,  # Increase for longer responses
-```
-
-### Customize Prompt
-
-Edit the prompt in the `ask_claude()` function to change the response format or style.
-
-## 🐛 Troubleshooting
-
-### Bot doesn't respond to `/troubleshoot`
-- Verify Slack app is installed in workspace
-- Check OAuth scopes are added (`chat:write`, `commands`)
-- Ensure bot is invited to the channel: `@TroubleshootBot`
-
-### "Access Denied" AWS Error
-- Verify AWS credentials are configured
-- Check IAM permissions include `bedrock:InvokeModel`
-- Confirm Claude model is enabled in Bedrock (use playground once)
-
-### Environment Variables Not Loading
-- Ensure `.env` file exists in project root
-- Check file is named exactly `.env` (not `.env.txt`)
-- Verify `python-dotenv` is installed
-
-### Socket Mode Connection Fails
-- Verify App-Level Token starts with `xapp-`
-- Check Socket Mode is enabled in Slack App settings
-- Ensure `connections:write` scope is added to app token
-
-## 🔒 Security Best Practices
-
-- ✅ Never commit `.env` file to git
-- ✅ Use IAM roles when running on AWS infrastructure
-- ✅ Rotate Slack tokens regularly
-- ✅ Restrict Bedrock model access via IAM policies
-- ✅ Use AWS Secrets Manager for production deployments
-- ✅ Implement rate limiting for Slack commands
-
-## 📊 Cost Considerations
-
-**AWS Bedrock (Claude 3 Haiku):**
-- Input: ~$0.25 per million tokens
-- Output: ~$1.25 per million tokens
-- Average troubleshooting request: ~$0.001
-
-**Slack:**
-- Free for standard features
-- Socket Mode: Free
-
-**Estimated monthly cost for 1000 troubleshooting requests: ~$1-2**
-
-## 🚀 Deployment Options
-
-### Local Development
-```bash
-python bot.py
-```
-
-### Docker
-```dockerfile
-FROM python:3.11-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY . .
-CMD ["python", "bot.py"]
-```
-
-### AWS ECS / EC2
-- Use IAM roles for AWS credentials
-- Store Slack tokens in AWS Secrets Manager
-- Configure auto-scaling for high traffic
-
-### Systemd Service (Linux)
-```bash
-sudo systemctl enable troubleshoot-bot
-sudo systemctl start troubleshoot-bot
-```
-## What I Learned
-
-- **Human-in-the-loop pattern**: AI suggests, humans approve, systems execute
-- **Bedrock integration**: How to structure prompts for actionable responses  
-- **Slack Socket Mode**: Real-time bot interactions without webhooks
-- **Environment variable management**: Keeping credentials secure
-
-This pattern can be extended to:
-- Auto-remediation for infrastructure issues
-- Customer support ticket triage
-- Code review automation
-- Incident response workflows
-
-## Future Enhancements
-
-- [ ] Execute actual fixes (restart services, clear caches, etc.)
-- [ ] Learn from past approvals to improve suggestions
-- [ ] Multi-step troubleshooting workflows
-- [ ] Integration with monitoring tools (DataDog, CloudWatch)
-- [ ] Support for multiple AI models (GPT-4, Gemini)
-
-## 🤝 Contributing
-
-Contributions welcome! Please:
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## 📝 License
-
-MIT License - feel free to use in commercial projects
-
-## 🙋 Support
-
-For issues or questions:
-- Open a GitHub issue
-- Check AWS Bedrock documentation: https://docs.aws.amazon.com/bedrock
-- Review Slack Bolt documentation: https://slack.dev/bolt-python
-
-## 🎉 Acknowledgments
-
-- Built with [Slack Bolt for Python](https://slack.dev/bolt-python)
-- Powered by [AWS Bedrock](https://aws.amazon.com/bedrock)
-- AI by [Anthropic Claude](https://www.anthropic.com/claude)
 
 ---
 
-**Made with ❤️ for DevOps and SRE teams**
+## Business Impact
+
+- Reduces **Mean Time To Resolution (MTTR)** by surfacing fixes instantly
+- Eliminates context-switching — engineers stay in Slack
+- Captures institutional knowledge on every incident
+- Safe for production — no autonomous execution without human approval
+
+---
+
+## Key Concepts Demonstrated
+
+- Agentic AI with human oversight
+- AWS Bedrock (Claude Sonnet) integration
+- Slack Bolt API event handling
+- Production-grade bot architecture
+- Responsible AI design (HITL pattern)
