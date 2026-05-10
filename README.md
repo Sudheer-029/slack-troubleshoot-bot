@@ -1,8 +1,16 @@
 # AI Troubleshoot Bot — Human-in-the-Loop Incident Response
 
-> Built in **24 hours**. Production-style AI incident response system that brings human oversight to autonomous troubleshooting.
+> **Built in 24 hours.** Production-style AI incident response with human oversight baked in.
 
-An AI-powered Slack bot that helps engineering teams resolve incidents faster — with Claude AI suggesting fixes and humans staying in control of execution.
+An AI-powered Slack bot that helps engineering teams resolve incidents faster — Claude AI diagnoses the issue and suggests fixes, humans stay in control of execution.
+
+---
+
+## Demo
+
+![Slack Bot in Action](assets/slack-demo.png)
+
+*Real interaction: Engineer types `/troubleshoot database connection timeouts` → AI analyzes → suggests 3 fixes → human approves → bot executes*
 
 ---
 
@@ -10,40 +18,43 @@ An AI-powered Slack bot that helps engineering teams resolve incidents faster �
 
 ```
 Engineer types: /troubleshoot [describe the issue]
-                        ?
-         Claude AI (via Amazon Bedrock) analyzes the issue
-                        ?
-         AI returns 3 ranked fix suggestions with reasoning
-                        ?
-              Human reviews and chooses:
-         +--------------------------------+
-       Approve    Reject    Escalate
-         ?                      ?
-    Bot executes         On-call engineer
-      the fix             gets notified
+                        ↓
+     Claude AI (via Amazon Bedrock) analyzes the issue
+                        ↓
+       Returns 3 ranked fix suggestions with reasoning
+                        ↓
+            Human reviews and chooses:
+    ┌──────────────────────────────────────┐
+  Approve              Reject          Escalate
+    ↓                                      ↓
+Bot executes                      On-call engineer
+  the fix                           gets notified
+    ↓
+Monitoring for 5 minutes...
 ```
 
 ---
 
 ## Why Human-in-the-Loop?
 
-Fully autonomous incident response is risky in production. This architecture gives you the speed of AI analysis with the safety of human judgment before any action is taken.
+Fully autonomous incident response is a liability in production. This architecture gives you:
 
-- AI handles the cognitive load of diagnosis and option generation
-- Human retains decision authority on execution
-- Every incident and resolution is logged — builds institutional knowledge over time
-- Scales senior engineering judgment across the entire team
+- **Speed of AI** — diagnosis and option generation in seconds
+- **Safety of humans** — no action taken without explicit approval
+- **Institutional memory** — every incident and resolution is logged, building a knowledge base over time
+- **Scalability** — senior engineer judgment distributed across the entire team
 
 ---
 
 ## Tech Stack
 
 | Component | Technology |
-|---|---|
+|-----------|------------|
 | AI Model | Claude Sonnet via Amazon Bedrock |
 | Bot Framework | Slack Bolt API (Python) |
-| Language | Python |
-| Architecture | Human-in-the-loop (HITL) |
+| Language | Python 3 |
+| Pattern | Human-in-the-Loop (HITL) |
+| License | MIT |
 
 ---
 
@@ -55,7 +66,7 @@ cd slack-troubleshoot-bot
 pip install -r requirements.txt
 ```
 
-Create a `.env` file:
+Create `.env`:
 ```
 SLACK_BOT_TOKEN=your_slack_bot_token
 SLACK_SIGNING_SECRET=your_signing_secret
@@ -64,7 +75,7 @@ AWS_SECRET_ACCESS_KEY=your_aws_secret
 AWS_REGION=us-east-1
 ```
 
-Run the bot:
+Run:
 ```bash
 python app.py
 ```
@@ -73,17 +84,34 @@ python app.py
 
 ## Business Impact
 
-- Reduces **Mean Time To Resolution (MTTR)** by surfacing fixes instantly
-- Eliminates context-switching — engineers stay in Slack
-- Captures institutional knowledge on every incident
-- Safe for production — no autonomous execution without human approval
+| Metric | Outcome |
+|--------|---------|
+| Time to first suggestion | < 5 seconds |
+| Context switching | Eliminated — engineers stay in Slack |
+| Institutional knowledge | Captured on every incident |
+| Production safety | Zero autonomous execution without human approval |
+| MTTR reduction | Immediate — AI handles cognitive load of diagnosis |
 
 ---
 
 ## Key Concepts Demonstrated
 
-- Agentic AI with human oversight
-- AWS Bedrock (Claude Sonnet) integration
-- Slack Bolt API event handling
-- Production-grade bot architecture
-- Responsible AI design (HITL pattern)
+- **Agentic AI with human oversight** — the right balance for production systems
+- **AWS Bedrock integration** — Claude Sonnet via managed API
+- **Slack Bolt event handling** — interactive message components, slash commands
+- **Responsible AI design** — HITL pattern prevents uncontrolled autonomous action
+- **Production-grade architecture** — logging, escalation path, monitoring window
+
+---
+
+## What's Next
+
+- Learn from past approved fixes to reduce verification overhead over time
+- Pattern matching on recurring incident types
+- Integration with PagerDuty / OpsGenie for escalation routing
+
+---
+
+## License
+
+MIT
